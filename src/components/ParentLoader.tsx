@@ -11,7 +11,7 @@ export default function ParentLoader({ children }: Props) {
   const { isUserReady } = useUserStore(state => state);
 
   if (!isUserReady) return <div>Checking if user exists...</div>;
-  if (!isProductSessionReady) return <div>Loading...</div>;
+  if (!isProductSessionReady) return <div>User setup done! Fetching products!...</div>;
 
-  return <div className='bg-slate-950 h-screen text-white px-10'>{children}</div>; // ✅ Return JSX directly
+  return <div className='bg-slate-950 h-screen text-white px-10'>{children}</div>;
 }
