@@ -5,7 +5,7 @@ import { Switch } from './ui/switch';
 import { useProductStore } from '../store/product.slice';
 
 function Navbar() {
-      const {user,setUser,resetUser} = useUserStore(state=>state);
+      const {user,setUser,setupUser} = useUserStore(state=>state);
       const {revalidate} = useProductStore(state=>state);
     
   return (
@@ -27,8 +27,8 @@ function Navbar() {
             </div>
             <LogOutIcon className='cursor-pointer' onClick={async ()=>{
               await revalidate();
-              resetUser();
-              window.location.reload();
+              setupUser();
+              // window.location.reload();
             }}/>
           </div>
         </div>

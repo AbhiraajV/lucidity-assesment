@@ -7,11 +7,11 @@ type Props = {
 }
 
 export default function ParentLoader({ children }: Props) {
-  const { isProductSessionReady } = useProductStore(state => state);
+  const { isProductSessionReady,productFetchError } = useProductStore(state => state);
   const { isUserReady } = useUserStore(state => state);
 
-  if (!isUserReady) return <div>Checking if user exists...</div>;
-  if (!isProductSessionReady) return <div>User setup done! Fetching products!...</div>;
+  if (!isUserReady) return <div className='text-white font-extrabold text-md'>Checking if user exists...</div>;
+  if (!isProductSessionReady) return <div className='text-white font-extrabold text-md'>User setup done! Fetching products!... {productFetchError.length > 0 ? `${productFetchError}, please try again later!`: ``}</div>;
 
-  return <div className='bg-slate-950 h-screen text-white px-10'>{children}</div>;
+  return <div className='bg-[#0c0327] h-screen text-white px-1 md:px-10'>{children}</div>;
 }

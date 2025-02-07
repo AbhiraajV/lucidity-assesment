@@ -5,6 +5,7 @@ import { calculateProductStats } from '../functions/products.functions';
 import { persist, subscribeWithSelector } from 'zustand/middleware';
 import { Role } from '../types/user';
 import { currentUserHasPermission } from '../consts/check-permissions';
+import { AxiosError } from 'axios';
 
 const PRODUCT_STORAGE_LOCAL_KEY = 'products_store';
 const DATA_RELEVANCE_TIME_IN_MS = 180000
@@ -24,6 +25,7 @@ interface ProductStore {
   selectedProduct: Product | null;
   setSelectedProduct: (product:Product) => void;
   recalculateValue: () => void;
+  productFetchError: string;
 }
 export const useProductStore = create<ProductStore>()(
   persist(
@@ -46,19 +48,30 @@ export const useProductStore = create<ProductStore>()(
         }
         set({ isProductSessionReady: true });
       },
-
+      productFetchError:"",
       revalidate: async () => {
+        set(()=>({
+          isProductSessionReady: false
+        }))
+        try{
 
-        const productsFromBackend: ProductWithoutMetadata[] = await ProductRepository.getAllProducts();
-        const fullProducts = productsFromBackend.map((product) => {
-          return { ...product, isDisabled: false, isDeleted: false };
-        });
-
-        set({
-          products: fullProducts,
-          isProductSessionReady: true,
-          lastUpdated: Date.now(),
-        });
+          const productsFromBackend: ProductWithoutMetadata[] = await ProductRepository.getAllProducts();
+          const fullProducts = productsFromBackend.map((product) => {
+            return { ...product, isDisabled: false, isDeleted: false };
+          });
+  
+          set({
+            products: fullProducts,
+            isProductSessionReady: true,
+            lastUpdated: Date.now(),
+            productFetchError:"",
+          });
+        }catch(e){
+          console.log({PRODUCT_FETCHING_ERROR:(e as AxiosError).message})
+          set({
+            productFetchError:(e as AxiosError).message
+          })
+        }
       },
 
       invalidate: () => {
